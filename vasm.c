@@ -402,6 +402,7 @@ static void assemble(void)
   section *sec;
   atom *p,*pp;
 
+  FILE *dbgfile=fopen("symbols.dbg", "w");
   convert_offset_labels();
   if(dwarf){
     dinfo.version=dwarf;
@@ -475,6 +476,10 @@ static void assemble(void)
         if(pic_check)
           do_pic_check(db->relocs);
         cur_listing=0;
+        if(cur_src->defsrc)
+          fprintf(dbgfile, "%d %x\n", cur_src->defline+cur_src->line, sec->pc);
+        else
+          fprintf(dbgfile, "%d %x\n", cur_src->line, sec->pc);
         if(dwarf){
           if(cur_src->defsrc)
             dwarf_line(&dinfo,sec,cur_src->defsrc->srcfile->index,
